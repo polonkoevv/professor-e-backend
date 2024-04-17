@@ -85,4 +85,4 @@ class NoteService{
     }
 }
 
-export default NoteService
+export default new NoteService()

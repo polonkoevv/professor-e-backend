@@ -3,12 +3,8 @@ import cors from "cors"
 import path from 'path'
 import pino from "./logger/logger.js"
 import dotenv from 'dotenv'
-import SizeService from "./service/size.service.js";
-import Size from "./models/size.model.js";
-import ImageService from "./service/image.service.js";
-import MaterialService from "./service/material.service.js";
-import NoteService from "./service/note.service.js";
-import ProductService from "./service/product.service.js";
+import ProductController from "./controller/product.controller.js";
+import ProductRouter from "./router/product.router.js";
 const __dirname = path.resolve()
 
 dotenv.config()
@@ -19,11 +15,10 @@ app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 app.use(cors()) 
 
-app.use(express.static(path.resolve(__dirname, 'static')))
-let ss = new ProductService()
-let sizeS = new SizeService()
+app.use(express.static(path.resolve(__dirname, '')))
 
-app.get("/size", async (req, res) => {res.send(await ss.GetAll())})
+
+app.use("/api", ProductRouter)
 
 const PORT = process.env.APP_PORT || 3000
 
@@ -40,10 +35,10 @@ app.listen(PORT, async () =>{
 
 
 
-        console.log(
-            await ss.AddOne(
-                "test", 123, "test", "preview", ["img", "img"], ["note", "note"], ["mat", "mat"], [1,2,3,4,5] 
-            )
-        )
+        // console.log(
+        //     await ss.AddOne(
+        //         "test", 123, "test", "preview", ["img", "img"], ["note", "note"], ["mat", "mat"], [1,2,3,4,5] 
+        //     )
+        // )
     
 })

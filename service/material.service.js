@@ -93,4 +93,4 @@ class MaterialService{
     }
 }
 
-export default MaterialService
+export default new MaterialService()

@@ -8,13 +8,6 @@ import pino from "../logger/logger.js"
 
 class ProductService{
 
-    constructor(){
-        this.materialService = new MaterialService()
-        this.noteService = new NoteService()
-        this.sizeService = new SizeService()
-        this.imageService = new ImageService()
-    }
-
      async GetAll(){
         try {
             let ids = (await pool.query("SELECT product_id FROM product;"))[0]
@@ -43,15 +36,11 @@ class ProductService{
 
             // console.log(product)
 
-            let notes = await this.noteService.GetAllByProdId(product_id)
-
-            let images = await this.imageService.GetAllByProdId(product_id)
-
-            let materials = await this.materialService.GetAllByProdId(product_id)
-
-            let sizes = await this.sizeService.GetAllByProdId(product_id)
-
-            let preview = await this.imageService.GetById(raw.preview_id)
+            let notes = await NoteService.GetAllByProdId(product_id)
+            let images = await ImageService.GetAllByProdId(product_id)
+            let materials = await MaterialService.GetAllByProdId(product_id)
+            let sizes = await SizeService.GetAllByProdId(product_id)
+            let preview = await ImageService.GetById(raw.preview_id)
 
             let res = new Product(
                 raw.product_id,
@@ -155,10 +144,10 @@ class ProductService{
 
     async AddOne(name, price, description, preview, images, notes, materials, sizes){
         try {
-            let pr_id = await this.imageService.AddOne(preview)
-            let img_ids = await this.imageService.AddMany(images)
+            let pr_id = await ImageService.AddOne(preview)
+            let img_ids = await ImageService.AddMany(images)
             
-            let mat_ids = await this.materialService.AddMany(materials)
+            let mat_ids = await MaterialService.AddMany(materials)
 
             let q = `INSERT INTO product SET name = ?, price = ?, description = ?, preview_id = ?;`
 
@@ -168,7 +157,7 @@ class ProductService{
 
             let prod_id = prod.insertId
 
-            let note_ids = await this.noteService.AddMany(prod_id, notes)
+            let note_ids = await NoteService.AddMany(prod_id, notes)
             
             await this.LinkImages(prod_id, img_ids)
             await this.LinkMaterials(prod_id, mat_ids)
@@ -183,4 +172,4 @@ class ProductService{
     }
 }
 
-export default ProductService
+export default new ProductService()

@@ -92,4 +92,4 @@ class SizeService{
     }
 }
 
-export default SizeService
+export default new SizeService()
