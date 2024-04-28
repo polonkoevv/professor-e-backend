@@ -23,5 +23,6 @@ ProductRouter.get("/product", productController.GetAll)
 ProductRouter.get("/product/:product_id", productController.GetOne)
 
 ProductRouter.post("/product", upload.any('images'), productController.AddOne)
+ProductRouter.delete("/product/:product_id", productController.DeleteOne)
 
 export default ProductRouter

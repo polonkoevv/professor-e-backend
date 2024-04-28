@@ -5,13 +5,12 @@ class ProductController{
 
     async GetAll(req, res){
         try {
-            // console.log(ProductService)
             let products = await ProductService.GetAll()
-            pino.info("getting all products")
-            res.send(products)            
+            pino.info("Getting all products")
+            res.json(products)            
         } catch (error) {
             pino.error(error)
-            res.status(400).send(error)
+            res.status(400).json(error)
             return error
         }
     }
@@ -21,10 +20,11 @@ class ProductController{
             let id = req.params.product_id
             // console.log(ProductService)
             let products = await ProductService.GetById(id)
-            res.send(products)            
+            pino.info(`Product sent: id = ${id}`)
+            res.json(products)            
         } catch (error) {
             pino.error(error)
-            res.status(400).send(error)
+            res.status(400).json(error)
             return error
         }
     }
@@ -57,32 +57,33 @@ class ProductController{
                 materials,
                 sizes
             )
+            pino.info(`Product added: id = ${product}`)
 
-            console.log(typeof(notes))
+            // console.log(typeof(notes))
 
-            console.log(preview)
-            console.log(images)
+            // console.log(preview)
+            // console.log(images)
 
-            res.send()
+            res.json(product)
         } catch (error) {
             pino.error(error)
-            res.status(400).send(error)
+            res.status(400).json(error)
             return error
         }
     }
 
-    // async DeleteOne(req, res){
-    //     try {
-    //         let id = req.params.product_id
-    //         // console.log(ProductService)
-    //         let products = await ProductService.DeleteOne(id)
-    //         res.send(products)            
-    //     } catch (error) {
-    //         pino.error(error)
-    //         res.status(400).send(error)
-    //         return error
-    //     }
-    // }
+    async DeleteOne(req, res){
+        try {
+            let id = req.params.product_id
+            let products = await ProductService.DeleteOne(id)
+            pino.info(`Product deleted: id = ${id}`)
+            res.json(products)            
+        } catch (error) {
+            pino.error(error)
+            res.status(400).json(error)
+            return error
+        }
+    }
 }
 
 export default new ProductController()

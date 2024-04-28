@@ -5,6 +5,9 @@ import pino from "./logger/logger.js"
 import dotenv from 'dotenv'
 import ProductController from "./controller/product.controller.js";
 import ProductRouter from "./router/product.router.js";
+import bodyParser from "body-parser";
+import SizeRouter from "./router/size.router.js";
+import UserRouter from "./router/user.router.js";
 const __dirname = path.resolve()
 
 dotenv.config()
@@ -14,11 +17,14 @@ const app = express()
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 app.use(cors()) 
+app.use(bodyParser.json());
 
 app.use(express.static(path.resolve(__dirname, '')))
 
 
 app.use("/api", ProductRouter)
+app.use("/api", SizeRouter)
+app.use("/api", UserRouter)
 
 const PORT = process.env.APP_PORT || 3000
 
