@@ -28,9 +28,9 @@ class CartService{
 
     async GetRowByProductIdAndCartId(cart_id, product_id){
         try {
-            let res = await pool.query("SELECT * FROM cart_to_product WHERE cart_id = ?, product_id = ?;", [cart_id, product_id])
+            let res = await pool.query("SELECT * FROM cart_to_product WHERE cart_id = ? AND product_id = ?;", [cart_id, product_id])
             console.log(res)
-            return res[0][0].cart_id
+            return res[0][0]
         } catch (error) {
             pino.error(error)
             return error

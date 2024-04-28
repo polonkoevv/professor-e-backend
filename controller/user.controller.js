@@ -32,9 +32,8 @@ class UserController{
 
     async Login(req, res){
         try {
-            console.log(req.query)
-            let email = req.query.email
-            let password = req.query.password
+            let email = req.body.email
+            let password = req.body.password
 
             console.log(email)
 
@@ -94,6 +93,32 @@ class UserController{
             console.log(decoded)
 
             let r = await userService.GetBio(user_id)
+            res.status(201).json({
+                user: r
+            })   
+        } catch (error) {
+            pino.error(error)
+            res.status(400).json(error)
+            return error
+        }
+    }
+
+    async DeleteOneProductFromcart(req, res){
+        try {
+            let authHeader = req.headers.authorization
+            if (authHeader == null){
+                return res.status(401).send()
+            }
+            let token = authHeader.split(" ")[1]
+            let decoded = jwt.decode(token)
+            let user_id = decoded.user_id
+
+            console.log(token)
+            console.log(decoded)
+
+            let product_id = req.params.product_id
+
+            let r = await userService.DeleteOneProductFromcart(user_id, product_id)
             res.status(201).json({
                 user: r
             })   

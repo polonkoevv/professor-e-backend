@@ -74,7 +74,7 @@ class UserService{
             console.log(cart_id, product_id)
 
             let exists = await cartService.GetRowByProductIdAndCartId(cart_id, product_id)
-            if (exists){
+            if (exists.cart_id){
                 let res = await pool.query("UPDATE cart_to_product SET quantity = quantity + 1 WHERE cart_id = ? AND product_id = ?;", [cart_id, product_id])
                 console.log(res)
                 return res
@@ -83,6 +83,32 @@ class UserService{
             let res = await pool.query("INSERT INTO cart_to_product SET cart_id = ?, product_id = ?;", [cart_id, product_id])
             console.log(res)
             return res
+        } catch (error) {
+            pino.error(error)
+            return error
+        }
+    }
+
+    async DeleteOneProductFromcart(user_id, product_id){
+        try {
+            let cart_id = await cartService.GetByUserId(user_id)
+            console.log(cart_id, product_id)
+
+            let exists = await cartService.GetRowByProductIdAndCartId(cart_id, product_id)
+            if (exists.cart_id){
+                if (exists.quantity > 1){
+                    let res = await pool.query("UPDATE cart_to_product SET quantity = quantity - 1 WHERE cart_id = ? AND product_id = ?;", [cart_id, product_id])
+                    console.log(res)
+                    return res
+                }
+                else{
+                    let res = await pool.query("DELETE FROM cart_to_product WHERE cart_id = ? AND product_id = ?;", [cart_id, product_id])
+                    console.log(res)
+                    return res
+                }
+            }
+
+            return null
         } catch (error) {
             pino.error(error)
             return error

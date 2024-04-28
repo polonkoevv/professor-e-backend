@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken"
-import { pool } from "../storage/connection.js"
+import pool from "../storage/connections.js"
 import pino from "../logger/logger.js"
 
 class authMiddlewares {
