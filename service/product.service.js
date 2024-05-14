@@ -11,8 +11,6 @@ class ProductService{
      async GetAll(){
         try {
             let ids = (await pool.query("SELECT product_id FROM product;"))[0]
-
-            // console.log(ids)
             let res = []
 
             for (let i = 0; i < ids.length; i++){
@@ -20,8 +18,6 @@ class ProductService{
                     ids[i].product_id
                 ))
             }
-
-            // pino.log(res)
             return res
         } catch (error) {
             pino.error(error)
@@ -68,8 +64,6 @@ class ProductService{
         try {
 
             let raw = (await pool.query("SELECT * FROM product WHERE product_id < ? ORDER BY product_id DESC LIMIT 1;", [product_id]))[0][0]
-
-            // console.log(product)
             pino.info(raw)
 
             let preview = await ImageService.GetById(raw.preview_id)
@@ -102,10 +96,7 @@ class ProductService{
         try {
 
             let raw = (await pool.query("SELECT * FROM product WHERE product_id = ?;", [product_id]))[0][0]
-
-            // console.log(product)
             pino.info(raw)
-
             let preview = await ImageService.GetById(raw.preview_id)
             let notes = await NoteService.GetAllByProdId(product_id)
             let images = await ImageService.GetAllByProdId(product_id)
@@ -123,9 +114,7 @@ class ProductService{
                 materials,
                 sizes
             )
-
             return res
-
         } catch (error) {
             pino.error(error)
             return error
@@ -280,15 +269,7 @@ class ProductService{
             prod = (await pool.query(q, [
                 name, price, description, product_id
             ]))[0]
-            
-
-            
-
-            
-
-            let note_ids = await NoteService.UpdateMany(product.notes, notes)
-            
-            
+            let note_ids = await NoteService.UpdateMany(product.notes, notes)            
             return product.product_id
         } catch (error) {
             pino.error(error)

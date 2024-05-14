@@ -159,15 +159,8 @@ class UserService{
         try {
             let user = await pool.query("SELECT * FROM user WHERE user_id = ?;", [user_id])
             let cart = await cartService.GetProductsByUserId(user_id)
-            // user = user[0]
-            // user[0].cart = cart
             let res = user[0][0]
             res.cart = cart
-            // pino.log(res)
-            // return {
-            //     user: user[0],
-            //     cart: cart
-            // }
             console.log(res)
             return res
         } catch (error) {
