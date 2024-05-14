@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken"
 import pool from "../storage/connections.js"
 import pino from "../logger/logger.js"
+import userService from "../service/user.service.js"
 
 class authMiddlewares {
     // Проверка валидности jwt токена
@@ -22,8 +23,9 @@ class authMiddlewares {
         }
 
         let decoded = jwt.decode(token)
-        let checkDb = await pool.query("SELECT * FROM user WHERE user_id = ?", [decoded.id])
-        if (checkDb[0].length < 1 || decoded.id == null){
+        let checkDb = await userService.GetBio(decoded.user_id)
+        // console.log("cjcjc", checkDb)
+        if (checkDb.user_id == null || decoded.user_id == null){
             pino.error(`user does not exist; `)
             return res.status(401).send()
         }

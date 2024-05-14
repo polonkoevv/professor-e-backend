@@ -85,7 +85,21 @@ class MaterialService{
     async UpdateOne(material_id, name){
         try {
             let res = await pool.query("UPDATE material SET name = ? WHERE material_id = ?", [name, material_id])
-            return res
+            return res[0].insertId
+        } catch (error) {
+            pino.error(error)
+            return error
+        }
+    }
+
+    async UpdateMany(material_ids, materials){
+        try {
+            let ids = []
+            for (let i = 0; i < materials.length; i++){
+                let id = await this.UpdateOne(material_ids[i].material_id, materials[i])
+                ids.push(id)
+            }
+            return ids
         } catch (error) {
             pino.error(error)
             return error

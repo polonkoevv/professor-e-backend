@@ -85,7 +85,22 @@ class ImageService{
     async UpdateOne(image_id, path){
         try {
             let res = await pool.query("UPDATE image SET path = ? WHERE image_id = ?", [path, image_id])
-            return res
+            console.log("res", res[0])
+            return res[0].insertId
+        } catch (error) {
+            pino.error(error)
+            return error
+        }
+    }
+
+    async UpdateMany(image_ids, images){
+        try {
+            let ids = []
+            for (let i = 0; i < images.length; i++){
+                let id = await this.UpdateOne(image_ids[i].image_path, images[i])
+                ids.push(id)
+            }
+            return ids
         } catch (error) {
             pino.error(error)
             return error

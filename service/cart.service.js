@@ -7,7 +7,6 @@ class CartService{
         try {
 
             let res = await pool.query("INSERT INTO cart SET user_id = ?;", [user_id])
-
             return res[0].insertId
         } catch (error) {
             pino.error(error)
@@ -30,7 +29,7 @@ class CartService{
         try {
             let res = await pool.query("SELECT * FROM cart_to_product WHERE cart_id = ? AND product_id = ?;", [cart_id, product_id])
             console.log(res)
-            return res[0][0]
+            return res[0]
         } catch (error) {
             pino.error(error)
             return error

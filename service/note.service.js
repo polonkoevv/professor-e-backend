@@ -77,7 +77,22 @@ class NoteService{
     async UpdateOne(note_id, text){
         try {
             let res = await pool.query("UPDATE note SET text = ? WHERE note_id = ?", [text, note_id])
-            return res
+            return res[0].insertId
+        } catch (error) {
+            pino.error(error)
+            return error
+        }
+    }
+
+    async UpdateMany(notes_ids, notes){
+        try {
+            let ids = []
+            console.log("notes", notes_ids)
+            for (let i = 0; i < notes.length; i++){
+                let id = await this.UpdateOne(notes_ids[i].note_id, notes[i])
+                ids.push(id)
+            }
+            return ids
         } catch (error) {
             pino.error(error)
             return error

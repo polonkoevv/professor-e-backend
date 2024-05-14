@@ -15,6 +15,34 @@ class ProductController{
         }
     }
 
+    async GetPrev(req, res){
+        try {
+            let id = req.params.product_id
+            // console.log(ProductService)
+            let products = await ProductService.GetPrevById(id)
+            pino.info(`Product sent: id = ${id}`)
+            res.json(products)            
+        } catch (error) {
+            pino.error(error)
+            res.status(400).json(error)
+            return error
+        }
+    }
+
+    async GetNext(req, res){
+        try {
+            let id = req.params.product_id
+            // console.log(ProductService)
+            let products = await ProductService.GetNextById(id)
+            pino.info(`Product sent: id = ${id}`)
+            res.json(products)            
+        } catch (error) {
+            pino.error(error)
+            res.status(400).json(error)
+            return error
+        }
+    }
+
     async GetOne(req, res){
         try {
             let id = req.params.product_id
@@ -33,6 +61,7 @@ class ProductController{
         try {
 
             console.log(req.files)
+            console.log(req.body)
 
             let preview = req.files[0].path
 
@@ -50,6 +79,57 @@ class ProductController{
             console.log(name, price, description, sizes, materials, notes)
 
             let product = ProductService.AddOne(
+                name, price, description,
+                preview,
+                images,
+                notes,
+                materials,
+                sizes
+            )
+            pino.info(`Product added: id = ${product}`)
+
+            // console.log(typeof(notes))
+
+            // console.log(preview)
+            // console.log(images)
+
+            res.json(product)
+        } catch (error) {
+            pino.error(error)
+            res.status(400).json(error)
+            return error
+        }
+    }
+
+    async UpdateOne(req, res){
+        try {
+
+            console.log(req.files)
+            console.log(req.body)
+            let id = req.params.product_id
+            console.log("files", req.files)
+            let preview = null
+            let images = []
+            if (req.files.length > 0 && req.files != [] && req.files != null){
+                preview = req.files[0].path
+    
+                preview = preview.replaceAll(/\\/g, "\/")
+                images = []
+
+                for (let i = 1; i < req.files.length; i++){
+                    images.push(req.files[i].path.replaceAll(/\\/g, "\/"))
+                }
+            }
+
+
+            
+
+            let {name, price, description, sizes, materials, notes} = req.body
+
+            console.log(name, price, description, sizes, materials, notes)
+
+            let product = ProductService.UpdateOne(
+                id,
                 name, price, description,
                 preview,
                 images,

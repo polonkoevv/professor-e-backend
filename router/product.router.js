@@ -20,9 +20,12 @@ const storageConfig = multer.diskStorage({
 const upload = multer({storage:storageConfig});
 
 ProductRouter.get("/product", productController.GetAll)
+ProductRouter.get("/product/:product_id/next", productController.GetNext)
+ProductRouter.get("/product/:product_id/prev", productController.GetPrev)
 ProductRouter.get("/product/:product_id", productController.GetOne)
 
 ProductRouter.post("/product", upload.any('images'), productController.AddOne)
+ProductRouter.put("/product/:product_id", upload.any('images'), productController.UpdateOne)
 ProductRouter.delete("/product/:product_id", productController.DeleteOne)
 
 export default ProductRouter

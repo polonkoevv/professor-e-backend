@@ -2,7 +2,7 @@ import pool from "../storage/connections.js"
 import pino from "../logger/logger.js"
 import cartService from "./cart.service.js"
 import jwt from "jsonwebtoken"
-
+import bcrypt from "bcrypt"
 class UserService{
 
     async Register(user){
@@ -30,7 +30,7 @@ class UserService{
     async GetByEmail(email){
         try {
             pino.info(email)
-            let res = await pool.query(`SELECT * FROM user WHERE email = ${email}`)
+            let res = await pool.query(`SELECT * FROM user WHERE email = ?`, [email])
             return res[0][0]
         } catch (error) {
             pino.error(error)
@@ -51,14 +51,14 @@ class UserService{
                 return null
             }
 
-            if (user.password != password){
+            if (!bcrypt.compareSync(password, user.password)){
                 return null
             }
 
             const token = jwt.sign(
                 {
                 user_id: user.user_id
-            }, process.env.TOKEN_KEY, {expiresIn: "1h", algorithm: "HS256"});
+            }, process.env.TOKEN_KEY, {expiresIn: "2h", algorithm: "HS256"});
 
             return token
         } catch (error) {
@@ -71,10 +71,11 @@ class UserService{
     async AddProductToCart(user_id, product_id){
         try {
             let cart_id = await cartService.GetByUserId(user_id)
-            console.log(cart_id, product_id)
+            console.log("CARTID PRODID:", cart_id, product_id)
 
             let exists = await cartService.GetRowByProductIdAndCartId(cart_id, product_id)
-            if (exists.cart_id){
+            console.log("EXISTS:", exists)
+            if (exists.length > 0){
                 let res = await pool.query("UPDATE cart_to_product SET quantity = quantity + 1 WHERE cart_id = ? AND product_id = ?;", [cart_id, product_id])
                 console.log(res)
                 return res
@@ -89,13 +90,34 @@ class UserService{
         }
     }
 
+    async DeleteAllOneProductFromCart(user_id, product_id){
+        try {
+            let cart_id = await cartService.GetByUserId(user_id)
+            console.log(cart_id, product_id)
+
+            let exists = (await cartService.GetRowByProductIdAndCartId(cart_id, product_id))[0]
+            console.log("exists", exists)
+            if (exists != undefined && exists != null){
+                let res = await pool.query("DELETE FROM cart_to_product WHERE cart_id = ? AND product_id = ?;", [cart_id, product_id])
+                console.log(res)
+                return res
+            }
+
+            return null
+        } catch (error) {
+            pino.error(error)
+            return error
+        }
+    }
+
     async DeleteOneProductFromcart(user_id, product_id){
         try {
             let cart_id = await cartService.GetByUserId(user_id)
             console.log(cart_id, product_id)
 
-            let exists = await cartService.GetRowByProductIdAndCartId(cart_id, product_id)
-            if (exists.cart_id){
+            let exists = (await cartService.GetRowByProductIdAndCartId(cart_id, product_id))[0]
+            console.log("exists", exists)
+            if (exists != undefined && exists != null){
                 if (exists.quantity > 1){
                     let res = await pool.query("UPDATE cart_to_product SET quantity = quantity - 1 WHERE cart_id = ? AND product_id = ?;", [cart_id, product_id])
                     console.log(res)
@@ -106,6 +128,24 @@ class UserService{
                     console.log(res)
                     return res
                 }
+            }
+
+            return null
+        } catch (error) {
+            pino.error(error)
+            return error
+        }
+    }
+
+    async FlushCart(user_id){
+        try {
+            let cart_id = await cartService.GetByUserId(user_id)
+            console.log(cart_id, product_id)
+
+            if (cart_id != null){
+                let res = await pool.query("DELETE FROM cart_to_product WHERE cart_id = ?", [cart_id])
+                console.log(res)
+                return res
             }
 
             return null
@@ -135,6 +175,7 @@ class UserService{
             return error
         }
     }
+
 }
 
 export default new UserService()
